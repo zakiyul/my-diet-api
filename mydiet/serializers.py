@@ -23,3 +23,8 @@ class ObatDietSerializerPOST(serializers.ModelSerializer):
   class Meta:
     model = models.ObatDiet
     fields = '__all__'
+
+class ArticleSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = models.Article
+    fields = '_all__'

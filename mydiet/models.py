@@ -20,6 +20,14 @@ class ObatDiet(models.Model):
   caraPakai = models.OneToOneField(CaraPakai, on_delete=models.CASCADE)
   ingredients = models.OneToOneField(Ingredients, on_delete=models.CASCADE)
   image = models.ImageField(upload_to='obat_diet/', null=True)
-
+  
   def __str__(self):
     return self.nama
+
+class Article(models.Model):
+  title = models.CharField(max_length=255)
+  image = models.ImageField(upload_to='article/', null=True)
+  text = models.TextField()
+
+  def __str__(self):
+    return self.title

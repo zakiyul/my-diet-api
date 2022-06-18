@@ -1,5 +1,5 @@
 from functools import partial
-from django.http import HttpResponse
+from django.http import HttpResponse, response
 from django.shortcuts import render
 
 from rest_framework import status
@@ -8,6 +8,42 @@ from rest_framework.decorators import api_view
 
 from . import models
 from . import serializers
+
+@api_view(['GET','POST'])
+def article_list(request):
+  if request.method == 'GET':
+    articles = models.Article.objects.all()
+    serializer = serializers.ArticleSerializer(articles, many=True)
+    return Response(serializer.data)
+  elif request.method == 'POST':
+    serializer = serializers.ArticleSerializer(data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','PATCH','DELETE'])
+def detail_article(request, id):
+  try:
+    article = models.Article.objects.get(pk=id)
+  except models.ObatDiet.DoesNotExist:
+    return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+  if request.method == 'GET':
+    serializer = serializers.ArticleSerializer(article)
+    return Response(serializer.data)
+  
+  elif request.method == 'PATCH':
+    serializer = serializers.ArticleSerializer(article, data=request.data, partial=True)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  elif request.method == 'DELETE':
+    article.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET','POST'])
 def obatDiet_list(request):
